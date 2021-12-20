@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
   // be sure to include its associated Products
   Category.findAll({
     include: [{
-      model: Product
+      model: Product,
     }]
   })
     .then(CategoryData => res.json(CategoryData))
@@ -26,18 +26,29 @@ router.get('/:id', (req, res) => {
       id: req.params.id
     },
     include: [{
-      model: Product
+      model: Product,
     }]
+  })
+  .then(CategoryData => {
+    if (!CategoryData) {
+      res.status(404).json({ message: 'No category with id' });
+      return;
+    }
+    res.json(CategoryData)
+  })
+  .catch(err => {
+    console.log(err)
+    res.status(400).json(err)
   })
 });
 
 router.post('/', (req, res) => {
   // create a new category
   Category.create({ category_name: req.body.category_name })
-  .then(dbCategoryData => res.json(dbCategoryData))
+  .then(CategoryData => res.json(CategoryData))
   .catch(err => {
     console.log(err)
-    res.status(500).json(err)
+    res.status(400).json(err)
   })
 });
 
@@ -57,7 +68,7 @@ router.put('/:id', (req, res) => {
   })
   .catch(err => {
     console.log(err)
-    res.status(500).json(err)
+    res.status(400).json(err)
   })
 });
 
@@ -77,7 +88,7 @@ router.delete('/:id', (req, res) => {
     })
     .catch(err => {
       console.log(err)
-      res.status(500).json(err)
+      res.status(400).json(err)
     })
 });
 
